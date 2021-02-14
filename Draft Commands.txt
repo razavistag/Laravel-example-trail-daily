@@ -1,0 +1,5 @@
+-- Migrate Tables
+    # php artisan migrate
+
+-- Making controller with default resources
+    # php artisan make:controller _____Controller --resource
