@@ -4,8 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Controllers
-use App\Http\Controllers\RegisterController;
+
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PostsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,4 +25,10 @@ use App\Http\Controllers\AuthController;
 
 Route::post('register',[AuthController::class, 'register']);
 Route::post('login',[AuthController::class, 'login']);
-Route::get('logout',[AuthController::class, 'logout'])->middleware('auth:api');;
+Route::get('logout',[AuthController::class, 'logout'])->middleware('auth:api');
+
+Route::post('post',[PostsController::class, 'store'])->middleware('auth:api');
+Route::get('post',[PostsController::class, 'index'])->middleware('auth:api');
+Route::delete('post/{id}',[PostsController::class, 'destroy'])->middleware('auth:api');
+Route::get('post/{like}',[PostsController::class, 'show'])->middleware('auth:api');
+Route::put('post/{id}',[PostsController::class, 'update'])->middleware('auth:api');
