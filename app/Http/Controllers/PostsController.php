@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use App\Models\Post;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class PostsController extends Controller
 {
@@ -100,8 +101,14 @@ class PostsController extends Controller
                     $image_string = str_replace(' ', '+', $image_string); //
                     $image_name_string  = rand(10,1000).'_'.$now.'_'.'image_' . rand(10,1000) . '.' . $image_extension[1];
 
-                    Storage::disk('public')->put($image_name_string ,base64_decode($image_string));
+                    // image compress
+                    $get_img = Image::make(base64_decode($image_string));
+                    $get_img->resize(50,50);
 
+                    Image::make($image_string)
+                            ->resize(960, 860)
+                            ->save(public_path('/storage/' . $image_name_string) );
+                    // Storage::disk('public')->put($image_name_string ,base64_decode($image_string));
                     $storeObj->img = $image_name_string;
                     $storeObj->save();
                  
@@ -193,7 +200,14 @@ class PostsController extends Controller
                         $image_string = str_replace(' ', '+', $image_string); //
                         $image_name_string  = rand(10,1000).'_'.$now.'_'.'image_' . rand(10,1000) . '.' . $image_extension[1];
     
-                        Storage::disk('public')->put($image_name_string ,base64_decode($image_string));
+                        // image compress
+                        $get_img = Image::make(base64_decode($image_string));
+                        $get_img->resize(50,50);
+
+                        Image::make($image_string)
+                                ->resize(960, 860)
+                                ->save(public_path('/storage/' . $image_name_string) );
+                        // Storage::disk('public')->put($image_name_string ,base64_decode($image_string));
     
                         $obj_find->img = $image_name_string;
                 }
