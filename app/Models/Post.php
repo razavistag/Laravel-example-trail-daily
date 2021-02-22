@@ -13,6 +13,7 @@ class Post extends Model
         "title",            /* TABLE Column*/
         "body",             /* TABLE Column*/
         "tags",             /* TABLE Column*/
+        "img",              /* TABLE Column*/
         "user_id",          /* TABLE Column For Forign Key*/
     ];
 

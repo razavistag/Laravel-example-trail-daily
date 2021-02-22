@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 use App\Models\Post;
 
 class PostsController extends Controller
@@ -85,7 +87,26 @@ class PostsController extends Controller
             }
             
             $storeObj =  Post::create($FormObj);
-    
+
+            if ($request->input('img')) {
+                $img_store_all =  $request->input('img');
+                $file = $img_store_all;
+                $now = Carbon::now()->timestamp;
+              
+                    $fileArray = $file;
+                    $image_string = $fileArray;
+                    preg_match("/data:image\/(.*?);/",$image_string,$image_extension);
+                    $image_string = preg_replace('/data:image\/(.*?);base64,/','',$image_string);
+                    $image_string = str_replace(' ', '+', $image_string); //
+                    $image_name_string  = rand(10,1000).'_'.$now.'_'.'image_' . rand(10,1000) . '.' . $image_extension[1];
+
+                    Storage::disk('public')->put($image_name_string ,base64_decode($image_string));
+
+                    $storeObj->img = $image_name_string;
+                    $storeObj->save();
+                 
+            }
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Post created successfully',
@@ -154,17 +175,33 @@ class PostsController extends Controller
         try{
             $obj_find = Post::find($id); 
             
-            if (isset($obj_find)) {
+            if ($obj_find) {
                 $FormObj = $this->GetForm($request);
 
                 $obj_find->title = $FormObj['title'];
                 $obj_find->body = $FormObj['body'];
                 $obj_find->tags = json_encode($FormObj['tags']); 
+                if ($request->input('img')) {
+                    $img_store_all =  $request->input('img');
+                    $file = $img_store_all;
+                    $now = Carbon::now()->timestamp;
+                  
+                        $fileArray = $file;
+                        $image_string = $fileArray;
+                        preg_match("/data:image\/(.*?);/",$image_string,$image_extension);
+                        $image_string = preg_replace('/data:image\/(.*?);base64,/','',$image_string);
+                        $image_string = str_replace(' ', '+', $image_string); //
+                        $image_name_string  = rand(10,1000).'_'.$now.'_'.'image_' . rand(10,1000) . '.' . $image_extension[1];
+    
+                        Storage::disk('public')->put($image_name_string ,base64_decode($image_string));
+    
+                        $obj_find->img = $image_name_string;
+                }
+
                 $obj_find->Save();
 
                 return response()->json([
-                    'success' => true, 
-                    'req'=> $FormObj,
+                    'success' => true,  
                     'data'=> $obj_find,
                     'message'=> 'post has been updated',
                 ]);
@@ -197,6 +234,7 @@ class PostsController extends Controller
         try{
             $obj_find = Post::find($id);
             $obj_find->delete();
+            Storage::disk('public')->delete($obj_find->img);
     
             return response()->json([
                 'success' => true,
@@ -222,7 +260,8 @@ class PostsController extends Controller
         return $this->validate($request, [
             'title' => ['required','max:150'],
             'body' =>  ['required','max:1400'],
-            'tags' =>  ['bail'],
+            'tags' =>  ['bail'], 
+            // 'img' =>  ['bail'], getting the request directly
         ],
         [
             'title.required' => 'Posts Title is required',
