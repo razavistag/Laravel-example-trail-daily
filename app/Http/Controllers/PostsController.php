@@ -41,7 +41,12 @@ class PostsController extends Controller
             // taking first 3 objects
             $Get_Obj_take_top_3 = Post::take(3)->with('user')->get();
 
+            // Rendering Audit Data
+            $Get_audit_objects = Post::first();
+            $render_audit_objects = $Get_audit_objects->audits; 
+
             return response()->json([
+                'render_audit_objects'=> $render_audit_objects,
                 'Get_Obj_take_top_3' => $Get_Obj_take_top_3,
                 'Get_Obj_by_like_where' => $Get_Obj_by_like_where,
                 'Get_Obj_by_multi_where' => $Get_Obj_by_multi_where,
