@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostsController;
+use App\Http\Controllers\DatabaserollbackController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +37,7 @@ Route::delete('post/{id}',[PostsController::class, 'destroy'])->middleware('auth
 Route::get('post/{like}',[PostsController::class, 'show'])->middleware('auth:api');
 Route::put('post/{id}',[PostsController::class, 'update'])->middleware('auth:api');
 
+Route::post('product/store',[DatabaserollbackController::class, 'store'])->middleware('auth:api');
 // Middleware group for routing
 // -------------------------------------------------------------------------
 // Route::group(['middleware' => 'auth:api'], function () {
