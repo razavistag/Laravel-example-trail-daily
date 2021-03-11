@@ -29,5 +29,3 @@
  - migrate tables
 		 - php artisan migrate
  - php artisan serve
-
- 

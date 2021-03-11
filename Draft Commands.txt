@@ -1,0 +1,145 @@
+-- Migrate Tables
+    # php artisan migrate
+
+-- Making controller with default resources
+    # php artisan make:controller _____Controller --resource
+
+image.intervention.io
+## image.intervention
+[Official Support | Documentation](image.intervention.io)
+
+ **Composer Installation**
+
+    php composer.phar require intervention/image
+Integration in Laravel
+ntervention Image has optional support for  [Laravel](http://laravel.com/)  and comes with a  Service Provider and Facades  for easy integration. The  `vendor/autoload.php`  is included by Laravel, so you don't have to require or autoload manually. Just see the instructions below.
+
+After you have installed Intervention Image, open your Laravel config file  `config/app.php`  and add the following lines.
+
+In the  **`$providers`**  array add the service providers for this package.
+
+> Intervention\Image\ImageServiceProvider::class
+
+Add the facade of this package to the **`$aliases`**  array.
+
+> 'Image' => Intervention\Image\Facades\Image::class
+
+Now the Image Class will be auto-loaded by Laravel.
+#### Publish configuration in Laravel
+
+> php artisan vendor:publish --provider="Intervention\Image\ImageServiceProviderLaravelRecent"
+
+
+## Laravel Auditing
+[Laravel Auditing Official Documentation ](http://www.laravel-auditing.com/)
+
+Installation
+```sh
+composer require owen-it/laravel-auditing
+```
+Edit the  `config/app.php`  file and add the following line to register the service provider:
+
+```php
+'providers' => [
+    // ...
+
+    OwenIt\Auditing\AuditingServiceProvider::class,
+
+    // ...
+],
+```
+After configuring your framework of choice, use the following command to publish the configuration settings:
+
+```sh
+php artisan vendor:publish --provider "OwenIt\Auditing\AuditingServiceProvider" --tag="config"
+```
+
+This will create the  `config/audit.php`  configuration file.
+Publish the  `audits`  table migration to the  `database/`  directory with the following command:
+
+```sh
+php artisan vendor:publish --provider "OwenIt\Auditing\AuditingServiceProvider" --tag="migrations"
+```
+Once done, execute the  `artisan`  command to migrate, creating the  `audits`  table in your database:
+
+```sh
+php artisan migrate
+```
+
+This is where the  `Audit`  records will be stored, by default.
+# Model Setup
+
+Setting up a model for auditing could not be simpler. Just  _use_  the  `OwenIt\Auditing\Auditable`  trait in the model you wish to audit and  _implement_  the  `OwenIt\Auditing\Contracts\Auditable`  interface.
+
+```php
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
+
+class User extends Model implements Auditable
+{
+    use \OwenIt\Auditing\Auditable;
+
+    // ...
+}
+```
+# Getting Audits
+
+`Audit`  records can be fetched very easily, via  [Eloquent](https://laravel.com/docs/master/eloquent)  relations.
+
+## Retrieving audit records
+
+Using an  `Article`  model example, here's how it works:
+
+```php
+// Get first available Article
+$article = Article::first();
+
+// Get all associated Audits
+$all = $article->audits;
+
+// Get first Audit
+$first = $article->audits()->first();
+
+// Get last Audit
+$last = $article->audits()->latest()->first();
+
+// Get Audit by id
+$audit = $article->audits()->find(4);
+```
+
+## Getting audit records with the associated User model
+
+```php
+// Get all associated Audits
+$all = $article->audits()->with('user')->get();
+```
+## Getting the Audit metadata
+
+Retrieve an  `array`  with the  `Audit`  metadata.
+
+```php
+// Get first available Article
+$article = Article::first();
+
+// Get latest Audit
+$audit = $article->audits()->latest()->first();
+
+var_dump($audit->getMetadata());
+```
+## Getting the modified properties
+
+Get an  `array`  with the modified properties of the  `Auditable`  model. The data includes the  **old**  and  **new**  values for each attribute.
+
+```php
+// Get first available Article
+$article = Article::first();
+
+// Get latest Audit
+$audit = $article->audits()->latest()->first();
+
+var_dump($audit->getModified());
+```
