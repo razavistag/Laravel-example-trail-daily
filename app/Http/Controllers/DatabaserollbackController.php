@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
@@ -58,30 +59,26 @@ class DatabaserollbackController extends Controller
             $Brand = new Brand;
             $Brand->brand_name = $request->brand_name;
             $Brand->brand_code = $request->brand_code;
-            $Brand->product_id = $Product_get_id[0]->id;
+            $Brand->product_idWW = $Product_get_id[0]->id;
             $Brand->save();
 
             DB::commit();
+
+
+            return response()->json([
+                'success'=>true,
+                'storedProduct' => $Product,
+                'storedDepartment' => $Department,
+                'storedBrand' => $Brand,
+
+            ]);
         }
         catch(\Exception $e)
         {
             DB::rollBack();
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Error Found',
-            ],500);
+            $MakeLog = [ Auth::user(), url()->current(), $e->getMessage() ];
+            return DatabaseRollbackLog($MakeLog);
         }
-
-
-        return response()->json([
-            'success'=>true,
-            'storedProduct' => $Product,
-            'storedDepartment' => $Department,
-            'storedBrand' => $Brand,
-
-        ]);
-
     }
 
 
